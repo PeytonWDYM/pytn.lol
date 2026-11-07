@@ -1,0 +1,116 @@
+name: Site
+
+# PRs: check + build + E2E.
+# Pushes to main: the same, then deploy that exact build to cPanel.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-${{ github.event.pull_request.number || github.ref }}
+  # Cancel superseded PR runs, but never interrupt a deploy halfway.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Check, build, E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Types, content frontmatter schemas, and formatting.
+      - run: pnpm check
+
+      - run: pnpm build
+        id: build
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - run: pnpm e2e
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+
+      - name: Keep E2E evidence
+        if: ${{ !cancelled() }}
+        # A storage hiccup must not turn a passing check red.
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-report
+          path: output/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Keep the verified build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+          include-hidden-files: true # public/.htaccess
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    name: Deploy to pytn.lol
+    needs: check
+    # Deploys are off until the repo variable DEPLOY_ENABLED is "true".
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production
+      url: https://pytn.lol
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      SSH_PORT: "21098" # Namecheap's SSH port
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+
+      - name: Set up SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
+
+      # Mirror dist/ into public_html. --delete removes stale pages, but the
+      # excludes protect cPanel-managed folders (AutoSSL needs .well-known).
+      - name: Upload
+        env:
+          DEPLOY_TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+        run: |
+          rsync -rlz --checksum --delete --delay-updates \
+            --exclude '.well-known/' --exclude 'cgi-bin/' \
+            -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=yes" \
+            dist/ "$DEPLOY_TARGET:public_html/"
+
+      - name: Verify live site
+        run: |
+          curl --fail --silent --show-error --location \
+            "https://pytn.lol/?v=$GITHUB_SHA" | grep -q '<title>pytn.lol</title>'

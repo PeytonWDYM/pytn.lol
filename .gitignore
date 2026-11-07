@@ -31,3 +31,7 @@ AGENTS.md
 plans/
 specs/
 *.plan.md
+
+# Astro / test output
+.astro/
+output/

@@ -1,0 +1,32 @@
+---
+// A dated list of links. Used for both posts and projects.
+import FormattedDate from "./FormattedDate.astro";
+
+export interface Entry {
+  href: string;
+  title: string;
+  description: string;
+  date: Date;
+}
+
+interface Props {
+  entries: Entry[];
+  empty?: string;
+}
+
+const { entries, empty = "Nothing here yet." } = Astro.props;
+---
+
+{entries.length === 0 ? (
+  <p>{empty}</p>
+) : (
+  <ul class="entry-list">
+    {entries.map(({ href, title, description, date }) => (
+      <li>
+        <a href={href}>{title}</a>
+        <FormattedDate date={date} />
+        <p>{description}</p>
+      </li>
+    ))}
+  </ul>
+)}

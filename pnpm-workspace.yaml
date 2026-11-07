@@ -1,0 +1,5 @@
+overrides:
+  # @napi-rs/wasm-runtime accepts emnapi 1.x or 2.x prereleases, and pnpm can
+  # pair a 2.0 beta runtime with a 1.x core, which crashes `astro check`.
+  # Remove once the Astro language server pins a matching pair.
+  "@emnapi/runtime": "^1.11.3"
