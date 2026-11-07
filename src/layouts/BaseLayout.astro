@@ -1,8 +1,10 @@
 ---
-// Page shell: head, header, main content, footer. Every page uses this.
+// Page shell for the blog/projects pages: head, header, main, footer.
+// Not routed right now (see src/pages/_blog and _projects).
 import BaseHead from "~/components/BaseHead.astro";
 import Footer from "~/components/Footer.astro";
 import Header from "~/components/Header.astro";
+import { SITE } from "~/site";
 
 type Props = import("astro/types").ComponentProps<typeof BaseHead>;
 ---
@@ -11,6 +13,12 @@ type Props = import("astro/types").ComponentProps<typeof BaseHead>;
 <html lang="en">
   <head>
     <BaseHead {...Astro.props} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.title}
+      href={new URL("/rss.xml", Astro.site)}
+    />
   </head>
   <body>
     <Header />

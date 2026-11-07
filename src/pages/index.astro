@@ -1,29 +1,5 @@
 ---
-import EntryList from "~/components/EntryList.astro";
-import BaseLayout from "~/layouts/BaseLayout.astro";
-import { getPosts, getProjects, postEntry, projectEntry } from "~/lib/content";
-import { SITE } from "~/site";
-
-const LATEST = 5;
-const posts = (await getPosts()).slice(0, LATEST).map(postEntry);
-const projects = (await getProjects()).slice(0, LATEST).map(projectEntry);
+import BlankLayout from "~/layouts/BlankLayout.astro";
 ---
 
-<!-- Placeholder copy: the intro gets written during the design pass. -->
-<BaseLayout>
-  <h1>{SITE.title}</h1>
-
-  <section>
-    <h2>
-      <a href="/blog/">latest posts</a>
-    </h2>
-    <EntryList entries={posts} empty="No posts yet." />
-  </section>
-
-  <section>
-    <h2>
-      <a href="/projects/">projects</a>
-    </h2>
-    <EntryList entries={projects} empty="No projects yet." />
-  </section>
-</BaseLayout>
+<BlankLayout />

@@ -1,0 +1,15 @@
+---
+// Placeholder shell: full head metadata, empty body. The page is just the
+// background color from global.css until the real site is designed.
+import BaseHead from "~/components/BaseHead.astro";
+
+type Props = import("astro/types").ComponentProps<typeof BaseHead>;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead {...Astro.props} />
+  </head>
+  <body></body>
+</html>

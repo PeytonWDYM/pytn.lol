@@ -1,5 +1,5 @@
 ---
-// <head> contents for every page: canonical URL, social previews, feeds.
+// <head> contents for every page: canonical URL and social previews.
 import "~/styles/global.css";
 import { SITE } from "~/site";
 
@@ -16,18 +16,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="color-scheme" content="light dark" />
+<meta name="color-scheme" content="dark" />
 <meta name="generator" content={Astro.generator} />
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 <link rel="sitemap" href="/sitemap-index.xml" />
-<link
-  rel="alternate"
-  type="application/rss+xml"
-  title={SITE.title}
-  href={new URL("/rss.xml", Astro.site)}
-/>
 
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content={SITE.title} />
