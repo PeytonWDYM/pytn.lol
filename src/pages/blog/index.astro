@@ -1,0 +1,12 @@
+---
+import EntryList from "~/components/EntryList.astro";
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { getPosts, postEntry } from "~/lib/content";
+
+const posts = (await getPosts()).map(postEntry);
+---
+
+<BaseLayout title="blog" description="Everything I've written.">
+  <h1>blog</h1>
+  <EntryList entries={posts} empty="No posts yet." />
+</BaseLayout>

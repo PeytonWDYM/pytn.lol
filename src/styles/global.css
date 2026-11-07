@@ -1,0 +1,32 @@
+/*
+ * Unstyled on purpose: the visual design hasn't been decided yet.
+ * Only functional rules live here for now.
+ */
+
+:root {
+  color-scheme: light dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+pre {
+  overflow-x: auto;
+}
+
+/* Shiki dual themes: follow the OS light/dark preference. */
+@media (prefers-color-scheme: dark) {
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+}
