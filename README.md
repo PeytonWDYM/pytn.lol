@@ -14,17 +14,11 @@ Push to `main` and it goes live.
 
 ## Pages
 
-| Path                 | Source                               |
-| -------------------- | ------------------------------------ |
-| `/`                  | `src/pages/index.astro`              |
-| `/blog/`             | `src/pages/blog/index.astro`         |
-| `/blog/<slug>/`      | `src/pages/blog/[...slug].astro`     |
-| `/projects/`         | `src/pages/projects/index.astro`     |
-| `/projects/<slug>/`  | `src/pages/projects/[...slug].astro` |
-| `/rss.xml`           | `src/pages/rss.xml.ts`               |
-| `/robots.txt`        | `src/pages/robots.txt.ts`            |
-| `/sitemap-index.xml` | `@astrojs/sitemap`                   |
-| 404                  | `src/pages/404.astro`                |
+Right now pytn.lol is a blank `#242424` placeholder (`src/pages/index.astro`).
+
+The blog and projects routes are built but parked: Astro skips anything in
+`src/pages/` starting with `_`. To publish them, rename `_blog/` to `blog/`,
+`_projects/` to `projects/`, and `_rss.xml.ts` to `rss.xml.ts`.
 
 ## Commands
 

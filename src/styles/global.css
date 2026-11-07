@@ -1,10 +1,16 @@
 /*
- * Unstyled on purpose: the visual design hasn't been decided yet.
- * Only functional rules live here for now.
+ * Placeholder: the site is a blank #242424 page until the visual design
+ * is decided. Only functional rules otherwise.
  */
 
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: #242424;
 }
 
 *,
